@@ -21,8 +21,8 @@ let gameOver = false;   // Controla se o jogo foi perdido
 let score = 0;          // Pontuação inicial
 
 class Player {
-    width: number = 50;
-    height: number = 30;
+    width: number = 90;
+    height: number = 150;
     x: number;
     y: number;
     speed: number = 7;
@@ -62,8 +62,8 @@ class Player {
 }
 
 class Invader {
-    width: number = 40;
-    height: number = 30;
+    width: number = 60;
+    height: number =70;
     x: number;
     y: number;
     speed: number;
@@ -110,7 +110,7 @@ class Bullet {
     x: number;
     y: number;
     speed: number = 10;
-    color: string = "yellow";
+    color: string = "cyan";
 
     constructor(x: number, y: number) {
         this.x = x;
