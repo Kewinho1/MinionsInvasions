@@ -2,8 +2,8 @@
 const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d")!;
 
-canvas.width = 800;
-canvas.height = 600;
+canvas.width = 1280;
+canvas.height = 720;
 
 // Carregar imagens
 const playerImg = new Image();
@@ -220,20 +220,33 @@ function endGame() {
 }
 
 function drawStartScreen() {
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "yellow";
+    ctx.strokeStyle = "black"; // Define a cor da borda
+    ctx.lineWidth = 3; // Define a espessura da borda
+
     ctx.font = "30px Arial";
-    ctx.fillText("Space Invaders", canvas.width / 2 - 100, canvas.height / 2 - 20);
+    ctx.strokeText("Minions Invasions", canvas.width / 2 - 100, canvas.height / 2 - 20);
+    ctx.fillText("Minions Invasions", canvas.width / 2 - 100, canvas.height / 2 - 20);
+
     ctx.font = "20px Arial";
+    ctx.strokeText("Clique no botão para iniciar", canvas.width / 2 - 120, canvas.height / 2 + 20);
     ctx.fillText("Clique no botão para iniciar", canvas.width / 2 - 120, canvas.height / 2 + 20);
 }
 
 function drawGameOverScreen() {
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "purple";
+    ctx.strokeStyle = "black"; // Define a cor da borda
+    ctx.lineWidth = 3; // Define a espessura da borda
+
     ctx.font = "30px Arial";
+    ctx.strokeText("Game Over!", canvas.width / 2 - 80, canvas.height / 2 - 20);
     ctx.fillText("Game Over!", canvas.width / 2 - 80, canvas.height / 2 - 20);
+
     ctx.font = "20px Arial";
+    ctx.strokeText("Clique no botão para jogar novamente", canvas.width / 2 - 160, canvas.height / 2 + 20);
     ctx.fillText("Clique no botão para jogar novamente", canvas.width / 2 - 160, canvas.height / 2 + 20);
 }
+
 
 // Função para desenhar a pontuação
 function drawScore() {
