@@ -1,3 +1,5 @@
+/*
+
 body {
     margin: 0;
     display: flex;
@@ -10,3 +12,36 @@ body {
 canvas {
     background-color: #111;
 }
+
+*/
+
+/* Definindo o vídeo como plano de fundo */
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+/* Estilizando o vídeo para cobrir a tela inteira */
+#backgroundVideo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1; /* Camada inferior */
+}
+
+/* Configurando o canvas para cobrir a tela e ficar sobre o vídeo */
+#gameCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2; /* Camada superior */
+}
+

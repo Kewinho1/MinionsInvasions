@@ -1,22 +1,55 @@
+// Função para obter a câmera traseira, se disponível
+async function getBackCameraStream(): Promise<void> {
+    try {
+        const devices: MediaDeviceInfo[] = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices: MediaDeviceInfo[] = devices.filter(device => device.kind === 'videoinput');
+
+        // Busca pela câmera traseira sem usar find
+        let backCamera: MediaDeviceInfo | undefined;
+        for (const device of videoDevices) {
+            if (device.label.toLowerCase().includes('back')) {
+                backCamera = device;
+                break; // Encerra o loop assim que encontrar a câmera traseira
+            }
+        }
+
+        const constraints: MediaStreamConstraints = {
+            video: backCamera ? { deviceId: { exact: backCamera.deviceId } } : true
+        };
+
+        const stream: MediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+        const video: HTMLVideoElement = document.getElementById('backgroundVideo') as HTMLVideoElement;
+        video.srcObject = stream;
+    } catch (error) {
+        console.error("Erro ao acessar a câmera:", error);
+    }
+}
+
+// Chama a função para iniciar o vídeo
+getBackCameraStream();
+
+    
 // Configurações principais
 const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d")!;
 
-canvas.width = 1280;
-canvas.height = 720;
+//canvas.width = 1280;
+//canvas.height = 720;
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 // Carregar imagens dos jogadores
 const player1Img = new Image();
 player1Img.src = 'nave.png'; // Imagem para o player1
 
-const player2Img = new Image();
-player2Img.src = 'nave2.png'; // Imagem para o player2
+//const player2Img = new Image();
+//player2Img.src = 'nave2.png'; // Imagem para o player2
 
 const invaderImg = new Image();
 invaderImg.src = 'alien.png';
 
-const backgroundImg = new Image();
-backgroundImg.src = 'fundo.avif';
+
 
 // Estado do jogo
 let isPlaying = false;
@@ -47,10 +80,16 @@ class Player {
         ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
 
-    move(direction: number) {
-        this.x += direction * this.speed;
-        if (this.x < 0) this.x = 0;
-        if (this.x + this.width > canvas.width) this.x = canvas.width - this.width;
+    move(targetX: number) {
+        // Define a nova posição, limitando-a aos limites do canvas
+        this.x = targetX;
+    
+        // Limita a posição do jogador para que não saia da tela
+        if (this.x < 0) {
+            this.x = 0; // Impede que o jogador saia pela esquerda
+        } else if (this.x + this.width > canvas.width) {
+            this.x = canvas.width - this.width; // Impede que o jogador saia pela direita
+        }
     }
 
     shoot() {
@@ -76,7 +115,10 @@ class Player {
 }
 
 
-// Função movePlayers atualizada para incluir controles de tiro
+let touchStartTime = 0; // Para armazenar o tempo do início do toque
+let isMoving = false; // Para controlar o estado de movimento suave
+
+// Função movePlayers atualizada para incluir controles de tiro e movimento suave
 function movePlayers() {
     document.addEventListener('keydown', (event) => {
         keysPressed[event.key] = true;
@@ -86,14 +128,69 @@ function movePlayers() {
             player1.shoot();
         }
         if (event.key === 'w') {  // Tecla 'w' para o jogador 2
-            player2.shoot();
+            // player2.shoot(); // Descomente se precisar do tiro para o jogador 2
         }
     });
 
     document.addEventListener('keyup', (event) => {
         keysPressed[event.key] = false;
     });
+
+    // Evento para detectar o início do toque (touch)
+    window.addEventListener('touchstart', (event) => {
+        const touchX = event.touches[0].clientX;
+        touchStartTime = new Date().getTime(); // Armazena o tempo do início do toque
+
+        // Inicia o movimento suave
+        isMoving = true; 
+        player1.move(touchX);
+    });
+
+    // Evento para detectar o fim do toque (touch)
+    window.addEventListener('touchend', () => {
+        isMoving = false;  // Para o movimento suave
+
+        // Se o toque foi curto, considera como um tiro
+        const touchEndTime = new Date().getTime();
+        if (touchEndTime - touchStartTime < 200) {
+            player1.shoot();
+        }
+    });
+
+    // Evento para detectar o movimento do toque (touch)
+    window.addEventListener('touchmove', (event) => {
+        if (isMoving) {
+            const touchX = event.touches[0].clientX; // Pega a posição X do toque
+            player1.move(touchX); // Move o jogador 1 baseado na posição do toque
+        }
+    });
+
+    // Evento para detectar o movimento do mouse sem necessidade de clique
+    window.addEventListener('mousemove', (event) => {
+        const mouseX = event.clientX; // Pega a posição X do mouse
+        player1.move(mouseX); // Move o jogador 1 baseado na posição do mouse
+    });
+
+    // Evento para detectar o início do clique do mouse (opcional, se você quiser manter a lógica de tiro)
+    window.addEventListener('mousedown', () => {
+        touchStartTime = new Date().getTime(); // Armazena o tempo do início do clique
+    });
+
+    // Evento para detectar o fim do clique do mouse (opcional, se você quiser manter a lógica de tiro)
+    window.addEventListener('mouseup', () => {
+        const mouseEndTime = new Date().getTime();
+        // Se o clique foi curto, considera como um tiro
+        if (mouseEndTime - touchStartTime < 200) {
+            player1.shoot();
+        }
+    });
 }
+
+// Função para iniciar o movimento suave
+function startSmoothMove(initialX:number) {
+    
+}
+
 
 class Invader {
     width: number = 60;
@@ -160,7 +257,7 @@ class Bullet {
 
 // Inicializando os jogadores com imagens diferentes
 const player1 = new Player(canvas.width / 4 - 45, canvas.height - 160, player1Img);
-const player2 = new Player(3 * canvas.width / 4 - 45, canvas.height - 160, player2Img);
+//const player2 = new Player(3 * canvas.width / 4 - 45, canvas.height - 160, player2Img);
 
 let invaders: Invader[] = [];
 let bullets: Bullet[] = [];
@@ -180,11 +277,11 @@ function spawnInvader() {
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
+    //ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
 
     if (isPlaying) {
         player1.draw();
-        player2.draw();
+        //player2.draw();
         invaders.forEach((invader) => invader.draw());
         bullets.forEach((bullet) => bullet.draw());
         drawScore();
@@ -210,13 +307,13 @@ function update() {
 
     invaders = invaders.filter((invader) => invader.alive);
     player1.checkCollision(invaders);
-    player2.checkCollision(invaders);
+    //player2.checkCollision(invaders);
 
     // Atualizar movimento dos jogadores
     if (keysPressed["ArrowLeft"]) player1.move(-1);
     if (keysPressed["ArrowRight"]) player1.move(1);
-    if (keysPressed["a"]) player2.move(-1);
-    if (keysPressed["d"]) player2.move(1);
+   // if (keysPressed["a"]) player2.move(-1);
+   // if (keysPressed["d"]) player2.move(1);
 }
 
 function gameLoop() {
@@ -235,7 +332,7 @@ function startGame() {
     spawnRate = 1000;  // Reiniciar o intervalo de geração
 
     player1.lives = 3;  // Reiniciar vidas do jogador 1
-    player2.lives = 3;  // Reiniciar vidas do jogador 2
+    //player2.lives = 3;  // Reiniciar vidas do jogador 2
     score = 0;          // Reiniciar a pontuação
 
     backgroundMusic.play(); // Iniciar a música de fundo
@@ -304,7 +401,7 @@ startButton.style.left = "50%";
 startButton.style.transform = "translateX(-50%)";
 startButton.style.padding = "10px 20px";
 startButton.style.fontSize = "20px";
-
+startButton.style.zIndex = '3';
 startButton.addEventListener("click", () => {
     startGame();
     startButton.style.display = "none";
@@ -317,6 +414,11 @@ function showStartButton() {
 // Carregar a música de fundo
 const backgroundMusic = new Audio('musica_de_fundo.mp3');
 backgroundMusic.loop = true; // Definir para tocar em loop
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
 
 movePlayers(); // Iniciar detecção de teclas para movimento
 gameLoop();

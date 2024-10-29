@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,58 +7,97 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 // Função para obter a câmera traseira, se disponível
 function getBackCameraStream() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const devices = yield navigator.mediaDevices.enumerateDevices();
-            const videoDevices = devices.filter(device => device.kind === 'videoinput');
-            // Busca pela câmera traseira sem usar find
-            let backCamera;
-            for (const device of videoDevices) {
-                if (device.label.toLowerCase().includes('back')) {
-                    backCamera = device;
-                    break; // Encerra o loop assim que encontrar a câmera traseira
-                }
+    return __awaiter(this, void 0, void 0, function () {
+        var devices, videoDevices, backCamera, _i, videoDevices_1, device, constraints, stream, video, error_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 3, , 4]);
+                    return [4 /*yield*/, navigator.mediaDevices.enumerateDevices()];
+                case 1:
+                    devices = _a.sent();
+                    videoDevices = devices.filter(function (device) { return device.kind === 'videoinput'; });
+                    backCamera = void 0;
+                    for (_i = 0, videoDevices_1 = videoDevices; _i < videoDevices_1.length; _i++) {
+                        device = videoDevices_1[_i];
+                        if (device.label.toLowerCase().includes('back')) {
+                            backCamera = device;
+                            break; // Encerra o loop assim que encontrar a câmera traseira
+                        }
+                    }
+                    constraints = {
+                        video: backCamera ? { deviceId: { exact: backCamera.deviceId } } : true
+                    };
+                    return [4 /*yield*/, navigator.mediaDevices.getUserMedia(constraints)];
+                case 2:
+                    stream = _a.sent();
+                    video = document.getElementById('backgroundVideo');
+                    video.srcObject = stream;
+                    return [3 /*break*/, 4];
+                case 3:
+                    error_1 = _a.sent();
+                    console.error("Erro ao acessar a câmera:", error_1);
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
             }
-            const constraints = {
-                video: backCamera ? { deviceId: { exact: backCamera.deviceId } } : true
-            };
-            const stream = yield navigator.mediaDevices.getUserMedia(constraints);
-            const video = document.getElementById('backgroundVideo');
-            video.srcObject = stream;
-        }
-        catch (error) {
-            console.error("Erro ao acessar a câmera:", error);
-        }
+        });
     });
 }
 // Chama a função para iniciar o vídeo
 getBackCameraStream();
 // Configurações principais
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+var canvas = document.getElementById("gameCanvas");
+var ctx = canvas.getContext("2d");
 //canvas.width = 1280;
 //canvas.height = 720;
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 // Carregar imagens dos jogadores
-const player1Img = new Image();
+var player1Img = new Image();
 player1Img.src = 'nave.png'; // Imagem para o player1
 //const player2Img = new Image();
 //player2Img.src = 'nave2.png'; // Imagem para o player2
-const invaderImg = new Image();
+var invaderImg = new Image();
 invaderImg.src = 'alien.png';
 // Estado do jogo
-let isPlaying = false;
-let gameOver = false;
-let score = 0;
+var isPlaying = false;
+var gameOver = false;
+var score = 0;
 // Estado de teclas para movimento contínuo
-const keysPressed = {};
+var keysPressed = {};
 // Adicionar a função de disparo na classe Player
 // Atualize a classe Player para receber uma imagem como parâmetro
-class Player {
-    constructor(startX, startY, image) {
+var Player = /** @class */ (function () {
+    function Player(startX, startY, image) {
         this.width = 90;
         this.height = 150;
         this.speed = 7;
@@ -68,10 +106,10 @@ class Player {
         this.y = startY;
         this.image = image;
     }
-    draw() {
+    Player.prototype.draw = function () {
         ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-    }
-    move(targetX) {
+    };
+    Player.prototype.move = function (targetX) {
         // Define a nova posição, limitando-a aos limites do canvas
         this.x = targetX;
         // Limita a posição do jogador para que não saia da tela
@@ -81,30 +119,32 @@ class Player {
         else if (this.x + this.width > canvas.width) {
             this.x = canvas.width - this.width; // Impede que o jogador saia pela direita
         }
-    }
-    shoot() {
+    };
+    Player.prototype.shoot = function () {
         bullets.push(new Bullet(this.x + this.width / 2, this.y));
-    }
-    checkCollision(invaders) {
-        invaders.forEach((invader) => {
-            if (this.x < invader.x + invader.width &&
-                this.x + this.width > invader.x &&
-                this.y < invader.y + invader.height &&
-                this.height + this.y > invader.y) {
-                this.lives--;
-                console.log("Colisão com invasor! Vidas restantes:", this.lives);
-                if (this.lives <= 0) {
+    };
+    Player.prototype.checkCollision = function (invaders) {
+        var _this = this;
+        invaders.forEach(function (invader) {
+            if (_this.x < invader.x + invader.width &&
+                _this.x + _this.width > invader.x &&
+                _this.y < invader.y + invader.height &&
+                _this.height + _this.y > invader.y) {
+                _this.lives--;
+                console.log("Colisão com invasor! Vidas restantes:", _this.lives);
+                if (_this.lives <= 0) {
                     endGame();
                 }
             }
         });
-    }
-}
-let touchStartTime = 0; // Para armazenar o tempo do início do toque
-let isMoving = false; // Para controlar o estado de movimento suave
+    };
+    return Player;
+}());
+var touchStartTime = 0; // Para armazenar o tempo do início do toque
+var isMoving = false; // Para controlar o estado de movimento suave
 // Função movePlayers atualizada para incluir controles de tiro e movimento suave
 function movePlayers() {
-    document.addEventListener('keydown', (event) => {
+    document.addEventListener('keydown', function (event) {
         keysPressed[event.key] = true;
         // Controles de tiro
         if (event.key === ' ') { // Barra de espaço para o jogador 1
@@ -114,45 +154,45 @@ function movePlayers() {
             // player2.shoot(); // Descomente se precisar do tiro para o jogador 2
         }
     });
-    document.addEventListener('keyup', (event) => {
+    document.addEventListener('keyup', function (event) {
         keysPressed[event.key] = false;
     });
     // Evento para detectar o início do toque (touch)
-    window.addEventListener('touchstart', (event) => {
-        const touchX = event.touches[0].clientX;
+    window.addEventListener('touchstart', function (event) {
+        var touchX = event.touches[0].clientX;
         touchStartTime = new Date().getTime(); // Armazena o tempo do início do toque
         // Inicia o movimento suave
         isMoving = true;
         player1.move(touchX);
     });
     // Evento para detectar o fim do toque (touch)
-    window.addEventListener('touchend', () => {
+    window.addEventListener('touchend', function () {
         isMoving = false; // Para o movimento suave
         // Se o toque foi curto, considera como um tiro
-        const touchEndTime = new Date().getTime();
+        var touchEndTime = new Date().getTime();
         if (touchEndTime - touchStartTime < 200) {
             player1.shoot();
         }
     });
     // Evento para detectar o movimento do toque (touch)
-    window.addEventListener('touchmove', (event) => {
+    window.addEventListener('touchmove', function (event) {
         if (isMoving) {
-            const touchX = event.touches[0].clientX; // Pega a posição X do toque
+            var touchX = event.touches[0].clientX; // Pega a posição X do toque
             player1.move(touchX); // Move o jogador 1 baseado na posição do toque
         }
     });
     // Evento para detectar o movimento do mouse sem necessidade de clique
-    window.addEventListener('mousemove', (event) => {
-        const mouseX = event.clientX; // Pega a posição X do mouse
+    window.addEventListener('mousemove', function (event) {
+        var mouseX = event.clientX; // Pega a posição X do mouse
         player1.move(mouseX); // Move o jogador 1 baseado na posição do mouse
     });
     // Evento para detectar o início do clique do mouse (opcional, se você quiser manter a lógica de tiro)
-    window.addEventListener('mousedown', () => {
+    window.addEventListener('mousedown', function () {
         touchStartTime = new Date().getTime(); // Armazena o tempo do início do clique
     });
     // Evento para detectar o fim do clique do mouse (opcional, se você quiser manter a lógica de tiro)
-    window.addEventListener('mouseup', () => {
-        const mouseEndTime = new Date().getTime();
+    window.addEventListener('mouseup', function () {
+        var mouseEndTime = new Date().getTime();
         // Se o clique foi curto, considera como um tiro
         if (mouseEndTime - touchStartTime < 200) {
             player1.shoot();
@@ -162,8 +202,8 @@ function movePlayers() {
 // Função para iniciar o movimento suave
 function startSmoothMove(initialX) {
 }
-class Invader {
-    constructor(x, speed) {
+var Invader = /** @class */ (function () {
+    function Invader(x, speed) {
         this.width = 60;
         this.height = 70;
         this.alive = true;
@@ -171,29 +211,31 @@ class Invader {
         this.y = Math.random() * 100;
         this.speed = speed;
     }
-    draw() {
+    Invader.prototype.draw = function () {
         if (this.alive) {
             ctx.drawImage(invaderImg, this.x, this.y, this.width, this.height);
         }
-    }
-    move() {
+    };
+    Invader.prototype.move = function () {
         this.y += this.speed;
-    }
-    checkCollision(bullets) {
-        bullets.forEach((bullet, index) => {
-            if (bullet.x < this.x + this.width &&
-                bullet.x + bullet.width > this.x &&
-                bullet.y < this.y + this.height &&
-                bullet.height + bullet.y > this.y) {
-                this.alive = false;
+    };
+    Invader.prototype.checkCollision = function (bullets) {
+        var _this = this;
+        bullets.forEach(function (bullet, index) {
+            if (bullet.x < _this.x + _this.width &&
+                bullet.x + bullet.width > _this.x &&
+                bullet.y < _this.y + _this.height &&
+                bullet.height + bullet.y > _this.y) {
+                _this.alive = false;
                 bullets.splice(index, 1);
                 score += 100;
             }
         });
-    }
-}
-class Bullet {
-    constructor(x, y) {
+    };
+    return Invader;
+}());
+var Bullet = /** @class */ (function () {
+    function Bullet(x, y) {
         this.width = 5;
         this.height = 10;
         this.speed = 10;
@@ -201,25 +243,26 @@ class Bullet {
         this.x = x;
         this.y = y;
     }
-    draw() {
+    Bullet.prototype.draw = function () {
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
-    }
-    move() {
+    };
+    Bullet.prototype.move = function () {
         this.y -= this.speed;
-    }
-}
+    };
+    return Bullet;
+}());
 // Inicializando os jogadores com imagens diferentes
-const player1 = new Player(canvas.width / 4 - 45, canvas.height - 160, player1Img);
+var player1 = new Player(canvas.width / 4 - 45, canvas.height - 160, player1Img);
 //const player2 = new Player(3 * canvas.width / 4 - 45, canvas.height - 160, player2Img);
-let invaders = [];
-let bullets = [];
-let invaderSpeed = 1;
-let spawnRate = 1000;
+var invaders = [];
+var bullets = [];
+var invaderSpeed = 1;
+var spawnRate = 1000;
 function spawnInvader() {
     if (!isPlaying)
         return;
-    const randomX = Math.random() * (canvas.width - 40);
+    var randomX = Math.random() * (canvas.width - 40);
     invaders.push(new Invader(randomX, invaderSpeed));
     invaderSpeed += 0.1;
     spawnRate = Math.max(300, spawnRate - 10);
@@ -231,8 +274,8 @@ function draw() {
     if (isPlaying) {
         player1.draw();
         //player2.draw();
-        invaders.forEach((invader) => invader.draw());
-        bullets.forEach((bullet) => bullet.draw());
+        invaders.forEach(function (invader) { return invader.draw(); });
+        bullets.forEach(function (bullet) { return bullet.draw(); });
         drawScore();
     }
     else if (gameOver) {
@@ -245,16 +288,16 @@ function draw() {
 function update() {
     if (!isPlaying)
         return;
-    invaders.forEach((invader) => {
+    invaders.forEach(function (invader) {
         invader.move();
         invader.checkCollision(bullets);
     });
-    bullets.forEach((bullet, index) => {
+    bullets.forEach(function (bullet, index) {
         bullet.move();
         if (bullet.y < 0)
             bullets.splice(index, 1);
     });
-    invaders = invaders.filter((invader) => invader.alive);
+    invaders = invaders.filter(function (invader) { return invader.alive; });
     player1.checkCollision(invaders);
     //player2.checkCollision(invaders);
     // Atualizar movimento dos jogadores
@@ -320,11 +363,11 @@ function drawScore() {
     ctx.fillText("Pontuação: " + score, 10, 30);
 }
 // Detectar quando uma tecla é solta
-document.addEventListener('keyup', (event) => {
+document.addEventListener('keyup', function (event) {
     keysPressed[event.key] = false;
 });
 // Criar o botão para iniciar/reiniciar o jogo
-const startButton = document.createElement("button");
+var startButton = document.createElement("button");
 startButton.innerText = "Jogar";
 document.body.appendChild(startButton);
 startButton.style.position = "absolute";
@@ -334,7 +377,7 @@ startButton.style.transform = "translateX(-50%)";
 startButton.style.padding = "10px 20px";
 startButton.style.fontSize = "20px";
 startButton.style.zIndex = '3';
-startButton.addEventListener("click", () => {
+startButton.addEventListener("click", function () {
     startGame();
     startButton.style.display = "none";
 });
@@ -342,9 +385,9 @@ function showStartButton() {
     startButton.style.display = "block";
 }
 // Carregar a música de fundo
-const backgroundMusic = new Audio('musica_de_fundo.mp3');
+var backgroundMusic = new Audio('musica_de_fundo.mp3');
 backgroundMusic.loop = true; // Definir para tocar em loop
-window.addEventListener('resize', () => {
+window.addEventListener('resize', function () {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 });
